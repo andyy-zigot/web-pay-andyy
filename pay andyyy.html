@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Payment Andy</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .payment-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            font-size: 32px;
+            color: #FFD700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+        
+        .qris-container {
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .qris-code {
+            width: 260px;
+            height: 260px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 15px;
+            display: none;
+            cursor: zoom-in;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .qris-code.zoomed {
+            transform: scale(2);
+            cursor: zoom-out;
+            z-index: 100;
+            position: relative;
+        }
+        
+        .qris-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .payment-button {
+            background: linear-gradient(135deg, #00AEEF, #0077CC);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            margin: 12px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 174, 239, 0.4);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+        
+        .payment-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 174, 239, 0.6);
+        }
+        
+        .payment-button:active {
+            transform: translateY(1px);
+        }
+        
+        .payment-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .payment-button:hover::after {
+            opacity: 1;
+        }
+        
+        .qr-allpay-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #FF5722, #E64A19);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        
+        .instructions {
+            font-size: 14px;
+            margin-top: 25px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .copy-notification {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 99;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        .dana-number-container {
+            display: none;
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: fadeIn 0.4s;
+        }
+        
+        .copy-btn {
+            margin-left: 12px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Welcome Payment Andy</h1>
+        
+        <button class="payment-button" onclick="showDana()">Show DANA Number</button>
+        <div id="danaNumber" class="dana-number-container">
+            085339251386
+            <button onclick="copyToClipboard('085339251386')" class="copy-btn">Copy</button>
+        </div>
+        
+        <button class="payment-button" onclick="showQris()">
+            Show QRIS Code
+            <span class="qr-allpay-badge">ALLPAY</span>
+        </button>
+        <div class="qris-container">
+            <div id="qrisCode" class="qris-code" onclick="zoomQris(this)">
+                <img src="https://files.catbox.moe/83c6m0.jpg" alt="QRIS Payment Code">
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Click the buttons above to reveal payment options</p>
+            <p>Tap QR code to zoom for better scanning</p>
+            <p>Thank you for your payment!</p>
+        </div>
+    </div>
+    
+    <div class="overlay" id="overlay" onclick="closeZoom()"></div>
+    
+    <div class="copy-notification" id="copyNotification">
+        DANA number copied to clipboard!
+    </div>
+    
+    <script>
+        function showDana() {
+            const danaNumber = document.getElementById('danaNumber');
+            danaNumber.style.display = danaNumber.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function showQris() {
+            const qrisCode = document.getElementById('qrisCode');
+            qrisCode.style.display = qrisCode.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function zoomQris(element) {
+            const overlay = document.getElementById('overlay');
+            element.classList.toggle('zoomed');
+            overlay.style.display = element.classList.contains('zoomed') ? 'block' : 'none';
+            
+            if(element.classList.contains('zoomed')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeZoom() {
+            const qrisCode = document.getElementById('qrisCode');
+            qrisCode.classList.remove('zoomed');
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            const notification = document.getElementById('copyNotification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Close zoom when pressing ESC key
+        document.addEventListener('keydown', function(event) {
+            if(event.key === "Escape") {
+                closeZoom();
+            }
+        });
+    </script>
+</body>
+</html>
